@@ -86,7 +86,7 @@ namespace STM_PC_1.StmConn
         public async Task<StmConfig> getConfiguration()
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage responseMsg = await client.GetAsync("http://" + stmConfigAddress.ToString()+ "/config");
+            HttpResponseMessage responseMsg = await client.GetAsync("http://" + stmConfigAddress.ToString() + "/config");
             responseMsg.EnsureSuccessStatusCode();
             string responseString = await responseMsg.Content.ReadAsStringAsync();
             client.Dispose();
@@ -94,14 +94,11 @@ namespace STM_PC_1.StmConn
             return StmConfig.parse(responseString);
         }
 
-        public async Task<StmConfig> updateConfiguration()
+        public StmConfig updateConfiguration()
         {
-            HttpClient client = new HttpClient();
-            StringContent content = new StringContent(stmConfig.toString());
-            HttpResponseMessage responseMsg = await client.PutAsync("http://" + stmConfigAddress.ToString(), content);
-            responseMsg.EnsureSuccessStatusCode();
-            string responseString = await responseMsg.Content.ReadAsStringAsync();
-            client.Dispose();
+            WebClient client = new WebClient();
+            byte[] response = client.UploadData("http://" + stmConfigAddress.ToString() + "/config", "PUT", Encoding.ASCII.GetBytes(stmConfig.toString()));
+            String responseString = System.Text.Encoding.UTF8.GetString(response);
 
             return StmConfig.parse(responseString);
         }

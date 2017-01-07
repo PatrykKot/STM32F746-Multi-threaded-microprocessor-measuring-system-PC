@@ -40,11 +40,17 @@
             this.udpStreamingPortTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.sTMConfigurationIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stmConfigurationIpTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.endpointTextBox = new System.Windows.Forms.TextBox();
+            this.delayTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.freqTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.portTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.amplitudePictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maximumFrequencyNumericUpDown)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // amplitudePictureBox
@@ -54,14 +60,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.amplitudePictureBox.Location = new System.Drawing.Point(12, 30);
             this.amplitudePictureBox.Name = "amplitudePictureBox";
-            this.amplitudePictureBox.Size = new System.Drawing.Size(432, 301);
+            this.amplitudePictureBox.Size = new System.Drawing.Size(390, 117);
             this.amplitudePictureBox.TabIndex = 2;
             this.amplitudePictureBox.TabStop = false;
             // 
             // freqResolutionTextBox
             // 
             this.freqResolutionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.freqResolutionTextBox.Location = new System.Drawing.Point(114, 345);
+            this.freqResolutionTextBox.Location = new System.Drawing.Point(114, 163);
             this.freqResolutionTextBox.Name = "freqResolutionTextBox";
             this.freqResolutionTextBox.ReadOnly = true;
             this.freqResolutionTextBox.Size = new System.Drawing.Size(100, 20);
@@ -75,7 +81,7 @@
             0,
             0,
             0});
-            this.maximumFrequencyNumericUpDown.Location = new System.Drawing.Point(13, 345);
+            this.maximumFrequencyNumericUpDown.Location = new System.Drawing.Point(13, 163);
             this.maximumFrequencyNumericUpDown.Maximum = new decimal(new int[] {
             20000,
             0,
@@ -98,10 +104,10 @@
             // 
             // button2
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(369, 346);
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(473, 160);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(100, 23);
             this.button2.TabIndex = 8;
             this.button2.Text = "Get config";
             this.button2.UseVisualStyleBackColor = true;
@@ -109,10 +115,10 @@
             // 
             // button3
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button3.Location = new System.Drawing.Point(288, 344);
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(473, 131);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.Size = new System.Drawing.Size(100, 23);
             this.button3.TabIndex = 9;
             this.button3.Text = "Set config";
             this.button3.UseVisualStyleBackColor = true;
@@ -124,7 +130,7 @@
             this.configurationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(904, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(594, 24);
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -175,35 +181,95 @@
             this.stmConfigurationIpTextBox.Size = new System.Drawing.Size(100, 23);
             this.stmConfigurationIpTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.stmConfigurationIpTextBox_KeyDown);
             // 
-            // numericUpDown1
+            // label1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(463, 349);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Minimum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(65, 20);
-            this.numericUpDown1.TabIndex = 11;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(408, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Endpoint";
+            // 
+            // endpointTextBox
+            // 
+            this.endpointTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.endpointTextBox.Location = new System.Drawing.Point(473, 27);
+            this.endpointTextBox.Name = "endpointTextBox";
+            this.endpointTextBox.Size = new System.Drawing.Size(100, 20);
+            this.endpointTextBox.TabIndex = 13;
+            this.endpointTextBox.TextChanged += new System.EventHandler(this.endpointTextBox_TextChanged);
+            // 
+            // delayTextBox
+            // 
+            this.delayTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.delayTextBox.Location = new System.Drawing.Point(473, 53);
+            this.delayTextBox.Name = "delayTextBox";
+            this.delayTextBox.Size = new System.Drawing.Size(100, 20);
+            this.delayTextBox.TabIndex = 15;
+            this.delayTextBox.TextChanged += new System.EventHandler(this.delayTextBox_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(408, 56);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Delay";
+            // 
+            // freqTextBox
+            // 
+            this.freqTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.freqTextBox.Location = new System.Drawing.Point(473, 79);
+            this.freqTextBox.Name = "freqTextBox";
+            this.freqTextBox.Size = new System.Drawing.Size(100, 20);
+            this.freqTextBox.TabIndex = 17;
+            this.freqTextBox.TextChanged += new System.EventHandler(this.freqTextBox_TextChanged);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(408, 82);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(28, 13);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "Freq";
+            // 
+            // portTextBox
+            // 
+            this.portTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.portTextBox.Location = new System.Drawing.Point(473, 105);
+            this.portTextBox.Name = "portTextBox";
+            this.portTextBox.Size = new System.Drawing.Size(100, 20);
+            this.portTextBox.TabIndex = 19;
+            this.portTextBox.TextChanged += new System.EventHandler(this.portTextBox_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(408, 108);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "Port";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(904, 378);
-            this.Controls.Add(this.numericUpDown1);
+            this.ClientSize = new System.Drawing.Size(594, 196);
+            this.Controls.Add(this.portTextBox);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.freqTextBox);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.delayTextBox);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.endpointTextBox);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.maximumFrequencyNumericUpDown);
@@ -217,7 +283,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.maximumFrequencyNumericUpDown)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -238,7 +303,14 @@
         private System.Windows.Forms.ToolStripTextBox udpStreamingPortTextBox;
         private System.Windows.Forms.ToolStripMenuItem sTMConfigurationIPToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox stmConfigurationIpTextBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox endpointTextBox;
+        private System.Windows.Forms.TextBox delayTextBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox freqTextBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox portTextBox;
+        private System.Windows.Forms.Label label4;
     }
 }
 

@@ -42,7 +42,7 @@ namespace STM_PC_1
             }
             int defaultPort = 53426;
 
-            stmConnection = new StmConnection(IPAddress.Parse("192.168.0.11"), defaultIp, defaultPort);
+            stmConnection = new StmConnection(IPAddress.Parse("192.168.1.11"), defaultIp, defaultPort);
             stmConnection.amplitudeDataReceivedEventHandler += new EventHandler<AmplitudeDataEventArgs>(ampUpdate);
 
             ampImage = new AmplitudeImage(2000);
@@ -75,17 +75,16 @@ namespace STM_PC_1
             ampImage.MaxVisibleFrequency = (float)maximumFrequencyNumericUpDown.Value;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         async private void button2_Click(object sender, EventArgs e)
         {
             try
             {
                 StmConfig config = await stmConnection.getConfiguration();
                 Console.WriteLine(config.toString());
+                delayTextBox.Text = config.AmplitudeSamplingDelay.ToString();
+                freqTextBox.Text = config.SamplingFrequency.ToString();
+                endpointTextBox.Text = config.UdpEndpointIP;
+                portTextBox.Text = config.UdpEndpointPort.ToString();
             }
             catch (HttpRequestException ex)
             {
@@ -97,10 +96,9 @@ namespace STM_PC_1
         {
             try
             {
-                StmConfig responseConfig = await stmConnection.updateConfiguration();
-                Console.WriteLine(responseConfig.toString());
+                stmConnection.updateConfiguration();
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -190,12 +188,60 @@ namespace STM_PC_1
 
         private void sTMConfigurationIPToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            stmConfigurationIpTextBox.Text = stmConnection.StmIpAddress.ToString();
+            //stmConfigurationIpTextBox.Text = stmConnection.StmIpAddress.ToString();
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void endpointTextBox_TextChanged(object sender, EventArgs e)
         {
-            
+            try
+            {
+                IPAddress.Parse(endpointTextBox.Text);
+                stmConnection.stmConfig.UdpEndpointIP = endpointTextBox.Text;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                endpointTextBox.Text = stmConnection.stmConfig.UdpEndpointIP;
+            }
+        }
+
+        private void delayTextBox_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                stmConnection.stmConfig.AmplitudeSamplingDelay = Convert.ToInt64(delayTextBox.Text);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                delayTextBox.Text = stmConnection.stmConfig.AmplitudeSamplingDelay.ToString();
+            }
+        }
+
+        private void freqTextBox_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                stmConnection.stmConfig.SamplingFrequency = Convert.ToInt64(freqTextBox.Text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                freqTextBox.Text = stmConnection.stmConfig.SamplingFrequency.ToString();
+            }
+        }
+
+        private void portTextBox_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                stmConnection.stmConfig.UdpEndpointPort = Convert.ToInt32(portTextBox.Text);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                portTextBox.Text = stmConnection.stmConfig.UdpEndpointPort.ToString();
+            }
         }
     }
 
