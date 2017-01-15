@@ -46,6 +46,5 @@ namespace STM_PC_1.Audio
     class AmplitudeDataEventArgs : EventArgs
     {
         public AmplitudeData amplitudeInstance;
-        public long elapsedTime;
     }
 }

@@ -17,6 +17,11 @@ namespace STM_PC_1.StmConn.Configuration
 
         public StmConfig()
         {
+            WindowType = "";
+            UdpEndpointIP = "";
+            AmplitudeSamplingDelay = 0;
+            SamplingFrequency = 0;
+            UdpEndpointPort = 0;
         }
 
         public String toString()

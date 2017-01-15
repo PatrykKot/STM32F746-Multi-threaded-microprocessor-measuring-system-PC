@@ -15,12 +15,9 @@ namespace STM_PC_1.StmConn
 {
     class StmConnection
     {
-        private Stopwatch receiveStopwatch = new Stopwatch();
-
         private IPAddress stmConfigAddress;
-        public StmConfig stmConfig = new StmConfig();
-
         private IPEndPoint pcHost;
+
         private UdpClient udpClient;
         private Task receiveTask;
         public event EventHandler<AmplitudeDataEventArgs> amplitudeDataReceivedEventHandler;
@@ -28,13 +25,9 @@ namespace STM_PC_1.StmConn
         public StmConnection(IPAddress stmConfigAddress, IPAddress pcIpAddress, int udpStreamingPort)
         {
             this.stmConfigAddress = stmConfigAddress;
-            stmConfig.UdpEndpointPort = udpStreamingPort;
-            stmConfig.UdpEndpointIP = pcIpAddress.ToString();
 
             pcHost = new IPEndPoint(IPAddress.Any, udpStreamingPort);
             udpClient = new UdpClient(udpStreamingPort, AddressFamily.InterNetwork);
-
-            receiveStopwatch.Start();
 
             receiveTask = Task.Run(() => receiveByUdpAsync());
         }
@@ -63,19 +56,16 @@ namespace STM_PC_1.StmConn
                     if (udpClient != null)
                         data = udpClient.Receive(ref pcHost);
                     AmplitudeData ampInst = AmplitudeData.parse(data, 23);
-                    receiveStopwatch.Stop();
-                    amplitudeReceivedEventSend(ampInst, receiveStopwatch.ElapsedMilliseconds);
-                    receiveStopwatch.Restart();
+                    amplitudeReceivedEventSend(ampInst);
                 }
                 catch (Exception ex) { }
             }
         }
 
-        private void amplitudeReceivedEventSend(AmplitudeData ampData, long delayTime)
+        private void amplitudeReceivedEventSend(AmplitudeData ampData)
         {
             AmplitudeDataEventArgs args = new AmplitudeDataEventArgs();
             args.amplitudeInstance = ampData;
-            args.elapsedTime = delayTime;
             EventHandler<AmplitudeDataEventArgs> handler = amplitudeDataReceivedEventHandler;
             if (handler != null)
             {
@@ -94,7 +84,7 @@ namespace STM_PC_1.StmConn
             return StmConfig.parse(responseString);
         }
 
-        public StmConfig updateConfiguration()
+        public StmConfig updateConfiguration(StmConfig stmConfig)
         {
             WebClient client = new WebClient();
             byte[] response = client.UploadData("http://" + stmConfigAddress.ToString() + "/config", "PUT", Encoding.ASCII.GetBytes(stmConfig.toString()));
