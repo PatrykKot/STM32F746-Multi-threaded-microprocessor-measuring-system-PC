@@ -29,18 +29,20 @@ namespace STM_PC_1.Audio
             }
         }
 
+        public int DataLength
+        {
+            get
+            {
+                return ampData.Count;
+            }
+        }
+
         public AmplitudeImage(float maxVisibleFrequency)
         {
             this.maxVisibleFrequency = maxVisibleFrequency;
         }
 
         public float FrequencyResolution { get { return frequencyResolution; } }
-
-        public float getStrongestFrequency()
-        {
-            List<float> data = ampData.ElementAt(ampData.Count() - 1);
-            return data.IndexOf(data.Max()) * frequencyResolution;
-        }
 
         public float MaximumFrequency
         {
@@ -53,7 +55,6 @@ namespace STM_PC_1.Audio
         public Bitmap getBitmap(int width, int height, float maxAmpValue)
         {
             if (ampData.Count() == 0 || maxVisibleFrequency == 0 || frequencyResolution == 0) return null;
-            Color pixelColor = new Color();
 
             int visibleDataLength = (int)Math.Round((maxVisibleFrequency / frequencyResolution), 0);
 

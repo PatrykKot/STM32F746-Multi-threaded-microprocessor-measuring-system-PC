@@ -32,6 +32,8 @@ namespace STM_PC_1
 
         private Dictionary<String, String> windowTypeDictionary = new Dictionary<string, string>();
 
+        private static float maxImageRefreshingDelay = 10;
+
         public Form1()
         {
             InitializeComponent();
@@ -47,7 +49,34 @@ namespace STM_PC_1
             ampImage = new AmplitudeImage((float)maximumFrequencyNumericUpDown.Value);
 
             Thread connectionCheckThread = new Thread(new ThreadStart(connectionThread));
+            connectionCheckThread.IsBackground = true;
             connectionCheckThread.Start();
+
+            Thread imageRefreshingThread = new Thread(new ThreadStart(refreshImage));
+            imageRefreshingThread.IsBackground = true;
+            imageRefreshingThread.Start();
+        }
+
+        private void refreshImage()
+        {
+            while(true)
+            {
+                try
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        if (ampImage.DataLength != 0)
+                        {
+                            float maxAmpValue = maxAmpValScrollBar.Value;
+                            amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
+                        }
+                    }));
+                }
+                catch (Exception)
+                { }
+
+                Thread.Sleep(TimeSpan.FromMilliseconds(maxImageRefreshingDelay));
+            }
         }
 
         async private void connectionThread()
@@ -140,9 +169,6 @@ namespace STM_PC_1
             else
             {
                 ampImage.update(e.amplitudeInstance, amplitudePictureBox.Width);
-
-                float maxAmpValue = maxAmpValScrollBar.Value;
-                amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
             }
         }
 
