@@ -28,26 +28,107 @@ namespace STM_PC_1
 
         private delegate void amplitudeDataReceivedMessageCallBack(object sender, AmplitudeDataEventArgs e);
 
+        private bool isDisabled;
+
+        private Dictionary<String, String> windowTypeDictionary = new Dictionary<string, string>();
+
         public Form1()
         {
             InitializeComponent();
+            windowTypeDictionary.Add("Rectangle", "RECTANGLE");
+            windowTypeDictionary.Add("Hann","HANN");
+            windowTypeDictionary.Add("Flat top", "FLAT_TOP");
 
-            IPAddress defaultIp;
-            try
-            {
-                defaultIp = IPAddress.Parse((networkInterfaceToolStripMenuItem.DropDownItems[0] as ToolStripMenuItem).DropDownItems[0].Text);
-            }
-            catch (Exception ex)
-            {
-                defaultIp = IPAddress.Parse("0.0.0.0");
-            }
-            int defaultPort = 53426;
+            disableAll();
 
-            stmConnection = new StmConnection(IPAddress.Parse("192.168.1.11"), defaultIp, defaultPort);
+            stmConnection = new StmConnection(IPAddress.Parse("192.168.1.11"), 53426);
             stmConnection.amplitudeDataReceivedEventHandler += new EventHandler<AmplitudeDataEventArgs>(ampUpdate);
 
-            ampImage = new AmplitudeImage(2000);
-            ampImage.MaxVisibleFrequency = (float)maximumFrequencyNumericUpDown.Value;
+            ampImage = new AmplitudeImage((float)maximumFrequencyNumericUpDown.Value);
+
+            Thread connectionCheckThread = new Thread(new ThreadStart(connectionThread));
+            connectionCheckThread.Start();
+        }
+
+        async private void connectionThread()
+        {
+            while (true)
+            {
+                StmConfig configuration;
+                try
+                {
+                    configuration = await stmConnection.getConfiguration();
+
+                    if (isDisabled)
+                    {
+                        this.Invoke(new Action(() =>
+                        {
+                            enableAll();
+                            parseConfiguration(configuration);
+                        }));
+                    }
+
+                    Thread.Sleep(5000);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Connection check: " + ex.Message);
+
+                    this.Invoke(new Action(() =>
+                    {
+                        disableAll();
+                    }));
+
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
+        void disableAll()
+        {
+            lock (locker)
+            {
+                endpointTextBox.Enabled = false;
+                portTextBox.Enabled = false;
+                windowTypeComboBox.Enabled = false;
+                setConfigButton.Enabled = false;
+                getConfigButton.Enabled = false;
+                freqTextBox.Enabled = false;
+                delayTextBox.Enabled = false;
+                maximumFrequencyNumericUpDown.Enabled = false;
+                maxAmpValScrollBar.Enabled = false;
+                isDisabled = true;
+
+                clearAll();
+            }
+        }
+
+        void enableAll()
+        {
+            lock (locker)
+            {
+                endpointTextBox.Enabled = true;
+                portTextBox.Enabled = true;
+                windowTypeComboBox.Enabled = true;
+                setConfigButton.Enabled = true;
+                getConfigButton.Enabled = true;
+                freqTextBox.Enabled = true;
+                delayTextBox.Enabled = true;
+                maximumFrequencyNumericUpDown.Enabled = true;
+                maxAmpValScrollBar.Enabled = true;
+                isDisabled = false;
+
+                clearAll();
+            }
+        }
+
+        void clearAll()
+        {
+            endpointTextBox.Text = "";
+            portTextBox.Text = "";
+            windowTypeComboBox.Text = "";
+            freqTextBox.Text = "";
+            delayTextBox.Text = "";
         }
 
         private void ampUpdate(object sender, AmplitudeDataEventArgs e)
@@ -60,7 +141,8 @@ namespace STM_PC_1
             {
                 ampImage.update(e.amplitudeInstance, amplitudePictureBox.Width);
 
-                amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height);
+                float maxAmpValue = maxAmpValScrollBar.Value;
+                amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
             }
         }
 
@@ -107,26 +189,71 @@ namespace STM_PC_1
             }
         }
 
-        private void sTMConfigurationIPToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            stmConfigurationIpTextBox.Text = stmConnection.StmIpAddress.ToString();
-        }
-
         private StmConfig createConfiguration()
         {
             StmConfig configuration = new StmConfig();
             lock (locker)
             {
-                if (InvokeRequired)
+                try
                 {
-                    this.Invoke(new Action(() =>
-                    {
-                        configuration.UdpEndpointIP = endpointTextBox.Text;
-                        configuration.UdpEndpointPort = Int32.Parse(portTextBox.Text);
-                        configuration.WindowType = windowTypeComboBox.Text;
-                        configuration.SamplingFrequency = Int32.Parse(freqTextBox.Text);
-                        configuration.AmplitudeSamplingDelay = Int32.Parse(delayTextBox.Text);
-                    }));
+                    IPAddress address = IPAddress.Parse(endpointTextBox.Text);
+                    configuration.UdpEndpointIP = address.ToString();
+                    endpointTextBox.Text = address.ToString();
+                }
+                catch(Exception)
+                {
+                    endpointTextBox.Text = stmConnection.LastConfiguration.UdpEndpointIP;
+                    configuration.UdpEndpointIP = stmConnection.LastConfiguration.UdpEndpointIP;
+                }
+
+                try
+                {
+                    int port = Int32.Parse(portTextBox.Text);
+                    if (port < 0 || port > 65535) throw new Exception();
+                    configuration.UdpEndpointPort = port;
+                }
+                catch(Exception)
+                {
+                    portTextBox.Text = stmConnection.LastConfiguration.UdpEndpointPort.ToString();
+                    configuration.UdpEndpointPort = stmConnection.LastConfiguration.UdpEndpointPort;
+                }
+
+                try
+                {
+                    int frequency = Int32.Parse(freqTextBox.Text);
+                    if (frequency < 0 || frequency > 192000) throw new Exception();
+                    configuration.SamplingFrequency = frequency;
+                }
+                catch (Exception)
+                {
+                    freqTextBox.Text = stmConnection.LastConfiguration.SamplingFrequency.ToString();
+                    configuration.SamplingFrequency = stmConnection.LastConfiguration.SamplingFrequency;
+                }
+
+                try
+                {
+                    int samplpingDelay = Int32.Parse(delayTextBox.Text);
+                    if (samplpingDelay <= 0 || samplpingDelay > 10000) throw new Exception();
+                    configuration.AmplitudeSamplingDelay = samplpingDelay;
+                }
+                catch (Exception)
+                {
+                    delayTextBox.Text = stmConnection.LastConfiguration.AmplitudeSamplingDelay.ToString();
+                    configuration.AmplitudeSamplingDelay = stmConnection.LastConfiguration.AmplitudeSamplingDelay;
+                }
+
+                try
+                {
+                    string windowType = "";
+                    if (!windowTypeDictionary.TryGetValue(windowTypeComboBox.Text, out windowType))
+                        throw new Exception();
+
+                    configuration.WindowType = windowType;
+                }
+                catch (Exception)
+                {
+                    configuration.WindowType = stmConnection.LastConfiguration.WindowType;
+                    windowTypeComboBox.Text = windowTypeDictionary.FirstOrDefault(x => x.Value == stmConnection.LastConfiguration.WindowType).Key;
                 }
             }
             return configuration;
@@ -136,17 +263,11 @@ namespace STM_PC_1
         {
             lock (locker)
             {
-                if (InvokeRequired)
-                {
-                    this.Invoke(new Action(() =>
-                    {
                         endpointTextBox.Text = configuration.UdpEndpointIP;
                         portTextBox.Text = configuration.UdpEndpointPort.ToString();
                         windowTypeComboBox.Text = configuration.WindowType;
                         freqTextBox.Text = configuration.SamplingFrequency.ToString();
                         delayTextBox.Text = configuration.AmplitudeSamplingDelay.ToString();
-                    }));
-                }
             }
         }
 
@@ -158,22 +279,25 @@ namespace STM_PC_1
 
         private void setConfigurationThread()
         {
-            StmConfig config = createConfiguration();
+            StmConfig config = null;
+            this.Invoke(new Action(() => { config = createConfiguration(); })); 
             try
             {
-                stmConnection.updateConfiguration(config);
+                config = stmConnection.updateConfiguration(config);
             }
             catch (Exception ex)
             {
                 try
                 {
-                    stmConnection.updateConfiguration(config);
+                    config = stmConnection.updateConfiguration(config);
                 }
                 catch (Exception exc)
                 {
                     Console.WriteLine(exc.Message);
+                    return;
                 }
             }
+            if (InvokeRequired) { this.Invoke(new Action(() => { parseConfiguration(config); })); }
         }
 
         private void getConfigButton_Click(object sender, EventArgs e)
@@ -184,10 +308,17 @@ namespace STM_PC_1
 
         async private void getConfigurationThread()
         {
-            StmConfig configuration = await stmConnection.getConfiguration();
-            parseConfiguration(configuration);
+            StmConfig configuration = null;
+            try
+            {
+                configuration = await stmConnection.getConfiguration();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            this.Invoke(new Action(() => { parseConfiguration(configuration); }));
         }
-
     }
 
     public class IpJson

@@ -10,23 +10,9 @@ namespace STM_PC_1.Audio
     class AmplitudeImage
     {
         private List<List<float>> ampData = new List<List<float>>();
-        private float maxAmpVal = 1;
         private int amplitudeDataLength = 0;
         private float maxVisibleFrequency;
         private float frequencyResolution;
-
-        public AmplitudeImage(float maxVisibleFrequency)
-        {
-            this.maxVisibleFrequency = maxVisibleFrequency;
-        }
-
-        public float FrequencyResolution { get { return frequencyResolution; } }
-
-        public float getStrongestFrequency()
-        {
-            List<float> data = ampData.ElementAt(ampData.Count() - 1);
-            return data.IndexOf(data.Max()) * frequencyResolution;
-        }
 
         public float MaxVisibleFrequency
         {
@@ -43,6 +29,19 @@ namespace STM_PC_1.Audio
             }
         }
 
+        public AmplitudeImage(float maxVisibleFrequency)
+        {
+            this.maxVisibleFrequency = maxVisibleFrequency;
+        }
+
+        public float FrequencyResolution { get { return frequencyResolution; } }
+
+        public float getStrongestFrequency()
+        {
+            List<float> data = ampData.ElementAt(ampData.Count() - 1);
+            return data.IndexOf(data.Max()) * frequencyResolution;
+        }
+
         public float MaximumFrequency
         {
             get
@@ -51,13 +50,12 @@ namespace STM_PC_1.Audio
             }
         }
 
-        public Bitmap getBitmap(int width, int height)
+        public Bitmap getBitmap(int width, int height, float maxAmpValue)
         {
             if (ampData.Count() == 0 || maxVisibleFrequency == 0 || frequencyResolution == 0) return null;
             Color pixelColor = new Color();
 
             float foundMax = findMaxAmp(this);
-            if (foundMax > maxAmpVal) maxAmpVal = foundMax;
 
             int visibleDataLength = (int)Math.Round((maxVisibleFrequency / frequencyResolution), 0);
 
@@ -69,16 +67,19 @@ namespace STM_PC_1.Audio
             {
                 byte* dataPtr = (byte*)bitmapData.Scan0;
                 float brightness;
-                byte red, green, blue;
                 for (int w = 0; w < ampData.Count; w++)
                     for (int h = 0; h < visibleDataLength; h++)
                     {
-                        brightness = 255 * (ampData.ElementAt(w).ElementAt(h) / maxAmpVal);
-                        blue = (byte)brightness;
-                        red = (byte)brightness;
-                        green = (byte)brightness;
+                        if (ampData.ElementAt(w).ElementAt(h) > maxAmpValue)
+                        {
+                            brightness = 255;
+                        }
+                        else
+                        {
+                            brightness = 255 * (ampData.ElementAt(w).ElementAt(h) / maxAmpValue);
+                        }
 
-                        pixelColor = Color.FromArgb(red, green, blue);
+                        pixelColor = Color.FromArgb((byte)brightness, (byte)brightness, (byte)brightness);
                         dataPtr[(w * 3) + h * stride] = pixelColor.B;
                         dataPtr[(w * 3) + h * stride + 1] = pixelColor.G;
                         dataPtr[(w * 3) + h * stride + 2] = pixelColor.R;

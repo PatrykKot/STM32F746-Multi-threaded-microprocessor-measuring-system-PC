@@ -22,8 +22,11 @@ namespace STM_PC_1.StmConn
         private Task receiveTask;
         public event EventHandler<AmplitudeDataEventArgs> amplitudeDataReceivedEventHandler;
 
-        public StmConnection(IPAddress stmConfigAddress, IPAddress pcIpAddress, int udpStreamingPort)
+        public StmConfig LastConfiguration { get; set; }
+
+        public StmConnection(IPAddress stmConfigAddress, int udpStreamingPort)
         {
+            LastConfiguration = new StmConfig();
             this.stmConfigAddress = stmConfigAddress;
 
             pcHost = new IPEndPoint(IPAddress.Any, udpStreamingPort);
@@ -76,12 +79,14 @@ namespace STM_PC_1.StmConn
         public async Task<StmConfig> getConfiguration()
         {
             HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(1);
             HttpResponseMessage responseMsg = await client.GetAsync("http://" + stmConfigAddress.ToString() + "/config");
             responseMsg.EnsureSuccessStatusCode();
             string responseString = await responseMsg.Content.ReadAsStringAsync();
             client.Dispose();
 
-            return StmConfig.parse(responseString);
+            LastConfiguration = StmConfig.parse(responseString);
+            return LastConfiguration;
         }
 
         public StmConfig updateConfiguration(StmConfig stmConfig)
@@ -90,7 +95,8 @@ namespace STM_PC_1.StmConn
             byte[] response = client.UploadData("http://" + stmConfigAddress.ToString() + "/config", "PUT", Encoding.ASCII.GetBytes(stmConfig.toString()));
             String responseString = System.Text.Encoding.UTF8.GetString(response);
 
-            return StmConfig.parse(responseString);
+            LastConfiguration = StmConfig.parse(responseString);
+            return LastConfiguration;
         }
     }
 }
