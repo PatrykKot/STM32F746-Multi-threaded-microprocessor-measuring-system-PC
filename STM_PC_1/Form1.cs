@@ -85,6 +85,7 @@ namespace STM_PC_1
                 freqTextBox.Text = config.SamplingFrequency.ToString();
                 endpointTextBox.Text = config.UdpEndpointIP;
                 portTextBox.Text = config.UdpEndpointPort.ToString();
+                windowTypeComboBox.Text = config.WindowType;
             }
             catch (HttpRequestException ex)
             {
@@ -188,7 +189,7 @@ namespace STM_PC_1
 
         private void sTMConfigurationIPToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            //stmConfigurationIpTextBox.Text = stmConnection.StmIpAddress.ToString();
+            stmConfigurationIpTextBox.Text = stmConnection.StmIpAddress.ToString();
         }
 
         private void endpointTextBox_TextChanged(object sender, EventArgs e)
@@ -241,6 +242,29 @@ namespace STM_PC_1
             {
                 Console.WriteLine(ex.Message);
                 portTextBox.Text = stmConnection.stmConfig.UdpEndpointPort.ToString();
+            }
+        }
+
+        private void sizeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                stmConnection.stmConfig.WindowType = windowTypeComboBox.Text;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

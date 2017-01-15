@@ -9,16 +9,14 @@ namespace STM_PC_1.StmConn.Configuration
 {
     class StmConfig
     {
-        public bool Started { get; set; }
-        public string UdpEndpointIP { get; set; }
         public int UdpEndpointPort { get; set; }
+        public string WindowType { get; set; }
         public long AmplitudeSamplingDelay { get; set; }
         public double SamplingFrequency { get; set; }
+        public string UdpEndpointIP { get; set; }
 
         public StmConfig()
         {
-            AmplitudeSamplingDelay = 10;
-            SamplingFrequency = 44100;
         }
 
         public String toString()

@@ -75,8 +75,10 @@ namespace STM_PC_1.Audio
                     {
                         brightness = 255 * (ampData.ElementAt(w).ElementAt(h) / maxAmpVal);
                         blue = (byte)brightness;
+                        red = (byte)brightness;
+                        green = (byte)brightness;
 
-                        pixelColor = Color.FromArgb(0,0, blue);
+                        pixelColor = Color.FromArgb(red, green, blue);
                         dataPtr[(w * 3) + h * stride] = pixelColor.B;
                         dataPtr[(w * 3) + h * stride + 1] = pixelColor.G;
                         dataPtr[(w * 3) + h * stride + 2] = pixelColor.R;
