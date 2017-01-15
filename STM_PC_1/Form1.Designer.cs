@@ -35,6 +35,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.configurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkInterfaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageSavesStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveImageStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.endpointTextBox = new System.Windows.Forms.TextBox();
             this.delayTextBox = new System.Windows.Forms.TextBox();
@@ -118,7 +120,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configurationToolStripMenuItem});
+            this.configurationToolStripMenuItem,
+            this.imageSavesStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(382, 24);
@@ -139,6 +142,21 @@
             this.networkInterfaceToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.networkInterfaceToolStripMenuItem.Text = "Network interface";
             this.networkInterfaceToolStripMenuItem.DropDownOpening += new System.EventHandler(this.networkInterfaceToolStripMenuItem_DropDownOpening);
+            // 
+            // imageSavesStripMenuItem
+            // 
+            this.imageSavesStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveImageStripMenuItem});
+            this.imageSavesStripMenuItem.Name = "imageSavesStripMenuItem";
+            this.imageSavesStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.imageSavesStripMenuItem.Text = "Data export";
+            // 
+            // saveImageStripMenuItem
+            // 
+            this.saveImageStripMenuItem.Name = "saveImageStripMenuItem";
+            this.saveImageStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveImageStripMenuItem.Text = "Save image";
+            this.saveImageStripMenuItem.Click += new System.EventHandler(this.saveImageStripMenuItem_Click);
             // 
             // label1
             // 
@@ -292,7 +310,6 @@
             this.Controls.Add(this.amplitudePictureBox);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(263, 320);
             this.Name = "Form1";
             this.Text = "STM32 Project";
@@ -328,6 +345,8 @@
         private System.Windows.Forms.HScrollBar maxAmpValScrollBar;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ToolStripMenuItem imageSavesStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveImageStripMenuItem;
     }
 }
 

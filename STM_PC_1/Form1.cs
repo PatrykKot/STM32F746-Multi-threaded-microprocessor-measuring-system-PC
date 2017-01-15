@@ -32,7 +32,9 @@ namespace STM_PC_1
 
         private Dictionary<String, String> windowTypeDictionary = new Dictionary<string, string>();
 
-        private static float maxImageRefreshingDelay = 10;
+        private static int maxImageRefreshingDelay = (10);
+
+        private System.Windows.Forms.Timer refreshingTimer;
 
         public Form1()
         {
@@ -52,32 +54,28 @@ namespace STM_PC_1
             connectionCheckThread.IsBackground = true;
             connectionCheckThread.Start();
 
-            Thread imageRefreshingThread = new Thread(new ThreadStart(refreshImage));
-            imageRefreshingThread.IsBackground = true;
-            imageRefreshingThread.Start();
+            refreshingTimer = new System.Windows.Forms.Timer();
+            refreshingTimer.Interval = maxImageRefreshingDelay;
+            refreshingTimer.Tick += refreshingTimer_Tick;
+            refreshingTimer.Start();
         }
 
-        private void refreshImage()
+        void refreshingTimer_Tick(object sender, EventArgs e)
         {
-            while(true)
+            if (ampImage.DataLength != 0)
             {
+                float maxAmpValue = maxAmpValScrollBar.Value;
+
                 try
                 {
-                    this.Invoke(new Action(() =>
-                    {
-                        if (ampImage.DataLength != 0)
-                        {
-                            float maxAmpValue = maxAmpValScrollBar.Value;
-                            amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
-                        }
-                    }));
+                    amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
                 }
-                catch (Exception)
-                { }
-
-                Thread.Sleep(TimeSpan.FromMilliseconds(maxImageRefreshingDelay));
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
-        }
+        } 
 
         async private void connectionThread()
         {
@@ -344,6 +342,21 @@ namespace STM_PC_1
                 Console.WriteLine(ex.Message);
             }
             this.Invoke(new Action(() => { parseConfiguration(configuration); }));
+        }
+
+        private void saveImageStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Title = "Save image";
+            dialog.Filter = "Jpeg Image|*.jpg|Bitmap Image|*.bmp|Gif Image|*.gif";
+            dialog.AddExtension = true;
+            dialog.FileName = "screen";
+            dialog.ShowDialog();
+
+            if(dialog.FileName != "")
+            {
+                amplitudePictureBox.Image.Save(dialog.FileName);
+            }
         }
     }
 
