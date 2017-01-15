@@ -19,8 +19,6 @@ namespace STM_PC_1.Audio
             {
                 this.data.Add(amplitude);
             }
-
-           this.data.RemoveAt(0);
         }
 
         public List<float> DataList

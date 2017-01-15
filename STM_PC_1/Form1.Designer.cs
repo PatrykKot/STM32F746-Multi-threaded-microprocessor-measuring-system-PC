@@ -60,7 +60,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.amplitudePictureBox.Location = new System.Drawing.Point(12, 27);
             this.amplitudePictureBox.Name = "amplitudePictureBox";
-            this.amplitudePictureBox.Size = new System.Drawing.Size(227, 251);
+            this.amplitudePictureBox.Size = new System.Drawing.Size(362, 251);
             this.amplitudePictureBox.TabIndex = 2;
             this.amplitudePictureBox.TabStop = false;
             // 
@@ -72,7 +72,7 @@
             0,
             0,
             0});
-            this.maximumFrequencyNumericUpDown.Location = new System.Drawing.Point(139, 416);
+            this.maximumFrequencyNumericUpDown.Location = new System.Drawing.Point(274, 416);
             this.maximumFrequencyNumericUpDown.Maximum = new decimal(new int[] {
             20000,
             0,
@@ -87,7 +87,7 @@
             this.maximumFrequencyNumericUpDown.Size = new System.Drawing.Size(100, 20);
             this.maximumFrequencyNumericUpDown.TabIndex = 6;
             this.maximumFrequencyNumericUpDown.Value = new decimal(new int[] {
-            2000,
+            5000,
             0,
             0,
             0});
@@ -107,7 +107,7 @@
             // setConfigButton
             // 
             this.setConfigButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.setConfigButton.Location = new System.Drawing.Point(139, 487);
+            this.setConfigButton.Location = new System.Drawing.Point(274, 487);
             this.setConfigButton.Name = "setConfigButton";
             this.setConfigButton.Size = new System.Drawing.Size(102, 23);
             this.setConfigButton.TabIndex = 9;
@@ -121,7 +121,7 @@
             this.configurationToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(247, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(382, 24);
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -153,7 +153,7 @@
             // endpointTextBox
             // 
             this.endpointTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.endpointTextBox.Location = new System.Drawing.Point(139, 284);
+            this.endpointTextBox.Location = new System.Drawing.Point(274, 284);
             this.endpointTextBox.Name = "endpointTextBox";
             this.endpointTextBox.Size = new System.Drawing.Size(100, 20);
             this.endpointTextBox.TabIndex = 13;
@@ -161,7 +161,7 @@
             // delayTextBox
             // 
             this.delayTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.delayTextBox.Location = new System.Drawing.Point(139, 363);
+            this.delayTextBox.Location = new System.Drawing.Point(274, 363);
             this.delayTextBox.Name = "delayTextBox";
             this.delayTextBox.Size = new System.Drawing.Size(100, 20);
             this.delayTextBox.TabIndex = 15;
@@ -179,7 +179,7 @@
             // freqTextBox
             // 
             this.freqTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.freqTextBox.Location = new System.Drawing.Point(139, 337);
+            this.freqTextBox.Location = new System.Drawing.Point(274, 337);
             this.freqTextBox.Name = "freqTextBox";
             this.freqTextBox.Size = new System.Drawing.Size(100, 20);
             this.freqTextBox.TabIndex = 17;
@@ -197,7 +197,7 @@
             // portTextBox
             // 
             this.portTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.portTextBox.Location = new System.Drawing.Point(139, 310);
+            this.portTextBox.Location = new System.Drawing.Point(274, 310);
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(100, 20);
             this.portTextBox.TabIndex = 19;
@@ -231,7 +231,7 @@
             "Rectangle",
             "Hann",
             "Flat top"});
-            this.windowTypeComboBox.Location = new System.Drawing.Point(139, 389);
+            this.windowTypeComboBox.Location = new System.Drawing.Point(274, 389);
             this.windowTypeComboBox.Name = "windowTypeComboBox";
             this.windowTypeComboBox.Size = new System.Drawing.Size(100, 21);
             this.windowTypeComboBox.TabIndex = 23;
@@ -244,7 +244,7 @@
             this.maxAmpValScrollBar.Maximum = 90000000;
             this.maxAmpValScrollBar.Minimum = 1000000;
             this.maxAmpValScrollBar.Name = "maxAmpValScrollBar";
-            this.maxAmpValScrollBar.Size = new System.Drawing.Size(227, 14);
+            this.maxAmpValScrollBar.Size = new System.Drawing.Size(362, 14);
             this.maxAmpValScrollBar.TabIndex = 24;
             this.maxAmpValScrollBar.Value = 15000000;
             // 
@@ -262,7 +262,7 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(93, 448);
+            this.label7.Location = new System.Drawing.Point(161, 448);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(73, 13);
             this.label7.TabIndex = 26;
@@ -272,7 +272,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(247, 519);
+            this.ClientSize = new System.Drawing.Size(382, 519);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.maxAmpValScrollBar);

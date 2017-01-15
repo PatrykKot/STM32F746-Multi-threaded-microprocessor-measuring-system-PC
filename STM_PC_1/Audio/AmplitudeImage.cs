@@ -55,8 +55,6 @@ namespace STM_PC_1.Audio
             if (ampData.Count() == 0 || maxVisibleFrequency == 0 || frequencyResolution == 0) return null;
             Color pixelColor = new Color();
 
-            float foundMax = findMaxAmp(this);
-
             int visibleDataLength = (int)Math.Round((maxVisibleFrequency / frequencyResolution), 0);
 
             Bitmap bitmap = new Bitmap(width, visibleDataLength);
@@ -67,38 +65,37 @@ namespace STM_PC_1.Audio
             {
                 byte* dataPtr = (byte*)bitmapData.Scan0;
                 float brightness;
-                for (int w = 0; w < ampData.Count; w++)
+                float[][] byteArray = ampData.Select(a => a.ToArray()).ToArray();
+                for (int w = 0; w < byteArray.Length; w++)
+                {
                     for (int h = 0; h < visibleDataLength; h++)
                     {
-                        if (ampData.ElementAt(w).ElementAt(h) > maxAmpValue)
+                        var value = byteArray[w][h];
+                        if (value > maxAmpValue)
                         {
                             brightness = 255;
                         }
                         else
                         {
-                            brightness = 255 * (ampData.ElementAt(w).ElementAt(h) / maxAmpValue);
+                            brightness = 255 * (value / maxAmpValue);
                         }
 
-                        pixelColor = Color.FromArgb((byte)brightness, (byte)brightness, (byte)brightness);
-                        dataPtr[(w * 3) + h * stride] = pixelColor.B;
-                        dataPtr[(w * 3) + h * stride + 1] = pixelColor.G;
-                        dataPtr[(w * 3) + h * stride + 2] = pixelColor.R;
+                        byte brightnessByte = (byte)brightness;
+                        int index = (w * 3) + (visibleDataLength - h - 1) * stride;
+                        dataPtr[index++] = brightnessByte;
+                        dataPtr[index++] = brightnessByte;
+                        dataPtr[index] = brightnessByte;
                     }
+                }
             }
             bitmap.UnlockBits(bitmapData);
 
-            return new Bitmap(bitmap, new Size(width, height));
-        }
+            var newImage = new Bitmap(width, height);
 
-        static private float findMaxAmp(AmplitudeImage ampImg)
-        {
-            float max = 0;
-            foreach(List<float> list in ampImg.ampData)
-                foreach(float val in list)
-                {
-                    if (val > max) max = val;
-                }
-            return max;
+            using (var graphics = Graphics.FromImage(newImage))
+                graphics.DrawImage(bitmap, 0, 0, width, height);
+
+            return newImage;
         }
 
         public void update(AmplitudeData amplitudeData, int maxLength)
