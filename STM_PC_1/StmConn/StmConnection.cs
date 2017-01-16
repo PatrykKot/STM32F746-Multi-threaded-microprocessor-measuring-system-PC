@@ -58,7 +58,7 @@ namespace STM_PC_1.StmConn
                 {
                     if (udpClient != null)
                         data = udpClient.Receive(ref pcHost);
-                    AmplitudeData ampInst = AmplitudeData.parse(data, 23);
+                    AmplitudeData ampInst = AmplitudeData.parse(data);
                     amplitudeReceivedEventSend(ampInst);
                 }
                 catch (Exception ex) { }
@@ -79,7 +79,7 @@ namespace STM_PC_1.StmConn
         public async Task<StmConfig> getConfiguration()
         {
             HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(1);
+            client.Timeout = TimeSpan.FromSeconds(2);
             HttpResponseMessage responseMsg = await client.GetAsync("http://" + stmConfigAddress.ToString() + "/config");
             responseMsg.EnsureSuccessStatusCode();
             string responseString = await responseMsg.Content.ReadAsStringAsync();
@@ -87,6 +87,18 @@ namespace STM_PC_1.StmConn
 
             LastConfiguration = StmConfig.parse(responseString);
             return LastConfiguration;
+        }
+
+        public async Task<long> getWindowSize()
+        {
+            HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
+            HttpResponseMessage responseMsg = await client.GetAsync("http://" + stmConfigAddress.ToString() + "/windowSize");
+            responseMsg.EnsureSuccessStatusCode();
+            string responseString = await responseMsg.Content.ReadAsStringAsync();
+            client.Dispose();
+
+            return Int32.Parse(responseString);
         }
 
         public StmConfig updateConfiguration(StmConfig stmConfig)

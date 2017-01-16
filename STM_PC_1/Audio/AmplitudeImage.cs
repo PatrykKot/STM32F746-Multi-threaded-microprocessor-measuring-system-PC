@@ -11,23 +11,6 @@ namespace STM_PC_1.Audio
     {
         private List<List<float>> ampData = new List<List<float>>();
         private int amplitudeDataLength = 0;
-        private float maxVisibleFrequency;
-        private float frequencyResolution;
-
-        public float MaxVisibleFrequency
-        {
-            get
-            {
-                return maxVisibleFrequency;
-            }
-            set
-            {
-                if (maxVisibleFrequency != value)
-                {
-                    maxVisibleFrequency = value;
-                }
-            }
-        }
 
         public int DataLength
         {
@@ -37,28 +20,31 @@ namespace STM_PC_1.Audio
             }
         }
 
-        public AmplitudeImage(float maxVisibleFrequency)
-        {
-            this.maxVisibleFrequency = maxVisibleFrequency;
-        }
-
-        public float FrequencyResolution { get { return frequencyResolution; } }
-
-        public float MaximumFrequency
+        public int AmpDataLength
         {
             get
             {
-                return ampData.ElementAt(0).Count * frequencyResolution;
+                if (ampData.Count > 0)
+                {
+                    return ampData.ElementAt(0).Count;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
 
-        public Bitmap getBitmap(int width, int height, float maxAmpValue)
+        public Bitmap getBitmap(int width, int height, float maxAmpValue, int maximumFrequency, int samplingFrequency)
         {
-            if (ampData.Count() == 0 || maxVisibleFrequency == 0 || frequencyResolution == 0) return null;
+            if (ampData.Count() == 0 ||  samplingFrequency == 0) return null;
 
-            int visibleDataLength = (int)Math.Round((maxVisibleFrequency / frequencyResolution), 0);
+            int dataLength = ampData.ElementAt(0).Count;
+            float windowLength = dataLength / (float)samplingFrequency;
+            float frequencyResolution = 1 / windowLength;
+            int maxDataLength = (int) Math.Floor(maximumFrequency / frequencyResolution);
 
-            Bitmap bitmap = new Bitmap(width, visibleDataLength);
+            Bitmap bitmap = new Bitmap(width, maxDataLength);
             var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadWrite, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             int stride = bitmapData.Stride;
 
@@ -69,7 +55,7 @@ namespace STM_PC_1.Audio
                 float[][] byteArray = ampData.Select(a => a.ToArray()).ToArray();
                 for (int w = 0; w < byteArray.Length; w++)
                 {
-                    for (int h = 0; h < visibleDataLength; h++)
+                    for (int h = 0; h < maxDataLength; h++)
                     {
                         var value = byteArray[w][h];
                         if (value > maxAmpValue)
@@ -82,7 +68,7 @@ namespace STM_PC_1.Audio
                         }
 
                         byte brightnessByte = (byte)brightness;
-                        int index = (w * 3) + (visibleDataLength - h - 1) * stride;
+                        int index = (w * 3) + (maxDataLength - h - 1) * stride;
                         dataPtr[index++] = brightnessByte;
                         dataPtr[index++] = brightnessByte;
                         dataPtr[index] = brightnessByte;
@@ -104,11 +90,6 @@ namespace STM_PC_1.Audio
             if (amplitudeDataLength != amplitudeData.DataList.Count())
             {
                 amplitudeDataLength = amplitudeData.DataList.Count();
-                ampData.Clear();
-            }
-            if (frequencyResolution != amplitudeData.frequencyResolution)
-            {
-                frequencyResolution = amplitudeData.frequencyResolution;
                 ampData.Clear();
             }
 

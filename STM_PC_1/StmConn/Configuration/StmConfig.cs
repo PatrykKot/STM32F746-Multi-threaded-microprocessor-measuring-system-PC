@@ -12,7 +12,7 @@ namespace STM_PC_1.StmConn.Configuration
         public int UdpEndpointPort { get; set; }
         public string WindowType { get; set; }
         public long AmplitudeSamplingDelay { get; set; }
-        public double SamplingFrequency { get; set; }
+        public int SamplingFrequency { get; set; }
         public string UdpEndpointIP { get; set; }
 
         public StmConfig()

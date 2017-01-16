@@ -9,12 +9,9 @@ namespace STM_PC_1.Audio
     class AmplitudeData
     {
         private List<float> data = new List<float>();
-        public float frequencyResolution;
 
-        public AmplitudeData(IEnumerable<float> data, float frequencyResolution)
+        public AmplitudeData(IEnumerable<float> data)
         {
-            this.frequencyResolution = frequencyResolution;
-
             foreach (float amplitude in data)
             {
                 this.data.Add(amplitude);
@@ -26,7 +23,7 @@ namespace STM_PC_1.Audio
             get { return data; }
         }
 
-        static public AmplitudeData parse(byte[] buffer, float frequencyResolution)
+        static public AmplitudeData parse(byte[] buffer)
         {
             List<float> data = new List<float>();
             for (int index = 0; index < buffer.Count(); index += 4)
@@ -35,7 +32,7 @@ namespace STM_PC_1.Audio
                 data.Add(ampVal);
             }
 
-            AmplitudeData ampData = new AmplitudeData(data, frequencyResolution);
+            AmplitudeData ampData = new AmplitudeData(data);
 
             return ampData;
         }

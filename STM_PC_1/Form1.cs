@@ -40,7 +40,7 @@ namespace STM_PC_1
         {
             InitializeComponent();
             windowTypeDictionary.Add("Rectangle", "RECTANGLE");
-            windowTypeDictionary.Add("Hann","HANN");
+            windowTypeDictionary.Add("Hann", "HANN");
             windowTypeDictionary.Add("Flat top", "FLAT_TOP");
 
             disableAll();
@@ -48,7 +48,8 @@ namespace STM_PC_1
             stmConnection = new StmConnection(IPAddress.Parse("192.168.1.11"), 53426);
             stmConnection.amplitudeDataReceivedEventHandler += new EventHandler<AmplitudeDataEventArgs>(ampUpdate);
 
-            ampImage = new AmplitudeImage((float)maximumFrequencyNumericUpDown.Value);
+            ampImage = new AmplitudeImage();
+            rulerPictureBox.Image = drawRuler(rulerPictureBox.Width, rulerPictureBox.Height, 1, (int)maximumFrequencyNumericUpDown.Value/1000, 300);
 
             Thread connectionCheckThread = new Thread(new ThreadStart(connectionThread));
             connectionCheckThread.IsBackground = true;
@@ -62,20 +63,20 @@ namespace STM_PC_1
 
         void refreshingTimer_Tick(object sender, EventArgs e)
         {
-            if (ampImage.DataLength != 0)
+            if (ampImage.DataLength != 0 && startedCheckBox.Checked)
             {
                 float maxAmpValue = maxAmpValScrollBar.Value;
 
                 try
                 {
-                    amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue);
+                    amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue, (int) maximumFrequencyNumericUpDown.Value, stmConnection.LastConfiguration.SamplingFrequency);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
             }
-        } 
+        }
 
         async private void connectionThread()
         {
@@ -94,20 +95,22 @@ namespace STM_PC_1
                             parseConfiguration(configuration);
                         }));
                     }
-
-                    Thread.Sleep(5000);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Connection check: " + ex.Message);
 
-                    this.Invoke(new Action(() =>
+                    try
                     {
-                        disableAll();
-                    }));
-
-                    Thread.Sleep(1000);
+                        this.Invoke(new Action(() =>
+                        {
+                            //disableAll();
+                        }));
+                    }
+                    catch (Exception) { }
                 }
+
+                Thread.Sleep(5000);
             }
         }
 
@@ -119,7 +122,6 @@ namespace STM_PC_1
                 portTextBox.Enabled = false;
                 windowTypeComboBox.Enabled = false;
                 setConfigButton.Enabled = false;
-                getConfigButton.Enabled = false;
                 freqTextBox.Enabled = false;
                 delayTextBox.Enabled = false;
                 maximumFrequencyNumericUpDown.Enabled = false;
@@ -138,7 +140,6 @@ namespace STM_PC_1
                 portTextBox.Enabled = true;
                 windowTypeComboBox.Enabled = true;
                 setConfigButton.Enabled = true;
-                getConfigButton.Enabled = true;
                 freqTextBox.Enabled = true;
                 delayTextBox.Enabled = true;
                 maximumFrequencyNumericUpDown.Enabled = true;
@@ -172,9 +173,21 @@ namespace STM_PC_1
 
         private void maximumFrequencyNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            if (ampImage.MaximumFrequency < (float)maximumFrequencyNumericUpDown.Value)
-                maximumFrequencyNumericUpDown.Value = (int)ampImage.MaximumFrequency;
-            ampImage.MaxVisibleFrequency = (float)maximumFrequencyNumericUpDown.Value;
+            int maximumFrequency = (int)maximumFrequencyNumericUpDown.Value;
+            int samplingFrequency = stmConnection.LastConfiguration.SamplingFrequency;
+
+            if (ampImage.AmpDataLength == 0) return;
+            else
+            {
+                if(maximumFrequency > samplingFrequency)
+                {
+                    maximumFrequencyNumericUpDown.Value = samplingFrequency;
+                }
+
+                Thread drawRulerTh = new Thread(new ThreadStart(drawRulerThread));
+                drawRulerTh.IsBackground = true;
+                drawRulerTh.Start();
+            }
         }
 
         private void networkInterfaceToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -224,7 +237,7 @@ namespace STM_PC_1
                     configuration.UdpEndpointIP = address.ToString();
                     endpointTextBox.Text = address.ToString();
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     endpointTextBox.Text = stmConnection.LastConfiguration.UdpEndpointIP;
                     configuration.UdpEndpointIP = stmConnection.LastConfiguration.UdpEndpointIP;
@@ -236,7 +249,7 @@ namespace STM_PC_1
                     if (port < 0 || port > 65535) throw new Exception();
                     configuration.UdpEndpointPort = port;
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     portTextBox.Text = stmConnection.LastConfiguration.UdpEndpointPort.ToString();
                     configuration.UdpEndpointPort = stmConnection.LastConfiguration.UdpEndpointPort;
@@ -287,11 +300,11 @@ namespace STM_PC_1
         {
             lock (locker)
             {
-                        endpointTextBox.Text = configuration.UdpEndpointIP;
-                        portTextBox.Text = configuration.UdpEndpointPort.ToString();
-                        windowTypeComboBox.Text = configuration.WindowType;
-                        freqTextBox.Text = configuration.SamplingFrequency.ToString();
-                        delayTextBox.Text = configuration.AmplitudeSamplingDelay.ToString();
+                endpointTextBox.Text = configuration.UdpEndpointIP;
+                portTextBox.Text = configuration.UdpEndpointPort.ToString();
+                windowTypeComboBox.Text = configuration.WindowType;
+                freqTextBox.Text = configuration.SamplingFrequency.ToString();
+                delayTextBox.Text = configuration.AmplitudeSamplingDelay.ToString();
             }
         }
 
@@ -304,7 +317,7 @@ namespace STM_PC_1
         private void setConfigurationThread()
         {
             StmConfig config = null;
-            this.Invoke(new Action(() => { config = createConfiguration(); })); 
+            this.Invoke(new Action(() => { config = createConfiguration(); }));
             try
             {
                 config = stmConnection.updateConfiguration(config);
@@ -324,26 +337,6 @@ namespace STM_PC_1
             if (InvokeRequired) { this.Invoke(new Action(() => { parseConfiguration(config); })); }
         }
 
-        private void getConfigButton_Click(object sender, EventArgs e)
-        {
-            Thread downloadConfigurationThread = new Thread(new ThreadStart(getConfigurationThread));
-            downloadConfigurationThread.Start();
-        }
-
-        async private void getConfigurationThread()
-        {
-            StmConfig configuration = null;
-            try
-            {
-                configuration = await stmConnection.getConfiguration();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            this.Invoke(new Action(() => { parseConfiguration(configuration); }));
-        }
-
         private void saveImageStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -353,10 +346,83 @@ namespace STM_PC_1
             dialog.FileName = "screen";
             dialog.ShowDialog();
 
-            if(dialog.FileName != "")
+            if (dialog.FileName != "")
             {
                 amplitudePictureBox.Image.Save(dialog.FileName);
             }
+        }
+
+        private void amplitudePictureBox_Resize(object sender, EventArgs e)
+        {
+            Thread drawRulerTh = new Thread(new ThreadStart(drawRulerThread));
+            drawRulerTh.IsBackground = true;
+            drawRulerTh.Start();
+        }
+
+        private void drawRulerThread()
+        {
+            int maximumValue = (int)maximumFrequencyNumericUpDown.Value / 1000;
+            int interval = 1;
+
+            if(maximumValue > 30)
+            {
+                interval = 10;
+            }
+
+            Bitmap bitmap = drawRuler(rulerPictureBox.Width, rulerPictureBox.Height, interval, maximumValue, 300);
+
+            this.Invoke(new Action(() =>
+            {
+                rulerPictureBox.Image = bitmap;
+            }));
+        }
+
+        private Bitmap drawRuler(int width, int height, float interval, float maxValue, int scalingHeight)
+        {
+            Font font = new Font("Arial", 7);
+            Bitmap bitmap = new Bitmap(width, scalingHeight);
+            Graphics rulerGraphics = Graphics.FromImage(bitmap);
+
+            rulerGraphics.DrawRectangle(Pens.White, ClientRectangle);
+            rulerGraphics.FillRectangle(Brushes.Black, 0, 0, Width, scalingHeight);
+            int count = 0;
+            int maxCount = 1;
+            int everyPixels = (int)(scalingHeight / (maxValue / interval));
+
+            for (int pixels = 0; pixels < scalingHeight; pixels++)
+            {
+                if ((pixels % everyPixels) == 0)
+                {
+                    maxCount++;
+                }
+            }
+
+            for (int pixels = scalingHeight; pixels >= 0; pixels--)
+            {
+                if (((scalingHeight - pixels) % everyPixels) == 0)
+                {
+                    rulerGraphics.DrawLine(Pens.White, (int)(width / 1.5), pixels, width, pixels);
+
+                    if (count != 0 && count < maxCount - 1)
+                        rulerGraphics.DrawString((count * interval).ToString(), font, Brushes.White, 0 + width/12, pixels - 6, new StringFormat());
+                    count++;
+                }
+                else if (((scalingHeight - pixels) % everyPixels) == (everyPixels / 2))
+                {
+                    rulerGraphics.DrawLine(Pens.White, (int)(width / 1.2), pixels, width, pixels);
+                }
+            }
+
+            rulerGraphics.DrawImage(bitmap, width, scalingHeight);
+
+            return new Bitmap(bitmap, width, height);
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            Thread drawRulerTh = new Thread(new ThreadStart(drawRulerThread));
+            drawRulerTh.IsBackground = true;
+            drawRulerTh.Start();
         }
     }
 
