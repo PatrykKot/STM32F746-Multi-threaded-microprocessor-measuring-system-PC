@@ -94,7 +94,7 @@
             this.maximumFrequencyNumericUpDown.Size = new System.Drawing.Size(100, 20);
             this.maximumFrequencyNumericUpDown.TabIndex = 6;
             this.maximumFrequencyNumericUpDown.Value = new decimal(new int[] {
-            22100,
+            1000,
             0,
             0,
             0});

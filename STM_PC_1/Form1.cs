@@ -173,15 +173,21 @@ namespace STM_PC_1
 
         private void maximumFrequencyNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            int maximumFrequency = (int)maximumFrequencyNumericUpDown.Value;
+            int maximumUserFrequency = (int)maximumFrequencyNumericUpDown.Value;
             int samplingFrequency = stmConnection.LastConfiguration.SamplingFrequency;
+            int windowSize = 2048;
+            float windowLength = windowSize / (float)samplingFrequency;
+            float frequencyResolution = 1 / windowLength;
 
             if (ampImage.AmpDataLength == 0) return;
             else
             {
-                if(maximumFrequency > samplingFrequency)
+                int dataLength = ampImage.AmpDataLength;
+                float maximumVisibleFrequency = frequencyResolution * dataLength;
+
+                if (maximumUserFrequency > maximumVisibleFrequency)
                 {
-                    maximumFrequencyNumericUpDown.Value = samplingFrequency;
+                    maximumFrequencyNumericUpDown.Value = (int)Math.Floor(maximumVisibleFrequency);
                 }
 
                 Thread drawRulerTh = new Thread(new ThreadStart(drawRulerThread));
@@ -415,6 +421,8 @@ namespace STM_PC_1
 
             rulerGraphics.DrawImage(bitmap, width, scalingHeight);
 
+            if (width == 0 || height == 0)
+                return null;
             return new Bitmap(bitmap, width, height);
         }
 

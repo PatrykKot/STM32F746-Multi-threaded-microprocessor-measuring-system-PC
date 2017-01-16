@@ -39,7 +39,7 @@ namespace STM_PC_1.Audio
         {
             if (ampData.Count() == 0 ||  samplingFrequency == 0) return null;
 
-            int dataLength = ampData.ElementAt(0).Count;
+            int dataLength = 2048;
             float windowLength = dataLength / (float)samplingFrequency;
             float frequencyResolution = 1 / windowLength;
             int maxDataLength = (int) Math.Floor(maximumFrequency / frequencyResolution);
