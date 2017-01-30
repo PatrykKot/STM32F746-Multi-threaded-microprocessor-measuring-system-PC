@@ -49,7 +49,7 @@ namespace STM_PC_1
             stmConnection.amplitudeDataReceivedEventHandler += new EventHandler<AmplitudeDataEventArgs>(ampUpdate);
 
             ampImage = new AmplitudeImage();
-            rulerPictureBox.Image = drawRuler(rulerPictureBox.Width, rulerPictureBox.Height, 1, (int)maximumFrequencyNumericUpDown.Value/1000, 300);
+            rulerPictureBox.Image = drawRuler(rulerPictureBox.Width, rulerPictureBox.Height, 1, (int)maximumFrequencyNumericUpDown.Value / 1000, 300);
 
             Thread connectionCheckThread = new Thread(new ThreadStart(connectionThread));
             connectionCheckThread.IsBackground = true;
@@ -69,11 +69,12 @@ namespace STM_PC_1
 
                 try
                 {
-                    amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue, (int) maximumFrequencyNumericUpDown.Value, stmConnection.LastConfiguration.SamplingFrequency);
+                    amplitudePictureBox.Image = ampImage.getBitmap(amplitudePictureBox.Width, amplitudePictureBox.Height, maxAmpValue, (int)maximumFrequencyNumericUpDown.Value, stmConnection.LastConfiguration.SamplingFrequency);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
+                    updateMaximumFrequencyNumericUpDown();
                 }
             }
         }
@@ -104,7 +105,7 @@ namespace STM_PC_1
                     {
                         this.Invoke(new Action(() =>
                         {
-                            //disableAll();
+                            disableAll();
                         }));
                     }
                     catch (Exception) { }
@@ -171,6 +172,27 @@ namespace STM_PC_1
             }
         }
 
+        private void updateMaximumFrequencyNumericUpDown()
+        {
+            int maximumUserFrequency = (int)maximumFrequencyNumericUpDown.Value;
+            int samplingFrequency = stmConnection.LastConfiguration.SamplingFrequency;
+            int windowSize = 2048;
+            float windowLength = windowSize / (float)samplingFrequency;
+            float frequencyResolution = 1 / windowLength;
+
+            if (ampImage.AmpDataLength == 0) return;
+            else
+            {
+                int dataLength = ampImage.AmpDataLength;
+                float maximumVisibleFrequency = frequencyResolution * dataLength;
+
+                if (maximumUserFrequency > maximumVisibleFrequency)
+                {
+                    maximumFrequencyNumericUpDown.Value = (int)Math.Floor(maximumVisibleFrequency / 1000) * 1000;
+                }
+            }
+        }
+
         private void maximumFrequencyNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int maximumUserFrequency = (int)maximumFrequencyNumericUpDown.Value;
@@ -187,7 +209,7 @@ namespace STM_PC_1
 
                 if (maximumUserFrequency > maximumVisibleFrequency)
                 {
-                    maximumFrequencyNumericUpDown.Value = (int)Math.Floor(maximumVisibleFrequency);
+                    maximumFrequencyNumericUpDown.Value = (int)Math.Floor(maximumVisibleFrequency / 1000) * 1000;
                 }
 
                 Thread drawRulerTh = new Thread(new ThreadStart(drawRulerThread));
@@ -370,7 +392,7 @@ namespace STM_PC_1
             int maximumValue = (int)maximumFrequencyNumericUpDown.Value / 1000;
             int interval = 1;
 
-            if(maximumValue > 30)
+            if (maximumValue > 30)
             {
                 interval = 10;
             }
@@ -410,7 +432,7 @@ namespace STM_PC_1
                     rulerGraphics.DrawLine(Pens.White, (int)(width / 1.5), pixels, width, pixels);
 
                     if (count != 0 && count < maxCount - 1)
-                        rulerGraphics.DrawString((count * interval).ToString(), font, Brushes.White, 0 + width/12, pixels - 6, new StringFormat());
+                        rulerGraphics.DrawString((count * interval).ToString(), font, Brushes.White, 0 + width / 12, pixels - 6, new StringFormat());
                     count++;
                 }
                 else if (((scalingHeight - pixels) % everyPixels) == (everyPixels / 2))
